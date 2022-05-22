@@ -1,26 +1,40 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+
 
 namespace Read_FileText
 {
     class Program
     {
+
         static void Main(string[] args)
         {
-            float x;
-            float y;
-            float z;
+            bool inGame = true;
+            Character player = new Character('X', ConsoleColor.DarkYellow);
+            List<Vector3> postions = new List<Vector3>();
 
-            x = Convert.ToSingle( Console.ReadLine());
-            y = Convert.ToSingle( Console.ReadLine());
-            z = Convert.ToSingle( Console.ReadLine());
+            do
+            {
 
-         
-            Console.WriteLine(x);
-            Console.WriteLine(y);
-            Console.WriteLine(z);
+                if (Console.KeyAvailable)
+                {
+                    ConsoleKeyInfo cki = Console.ReadKey(true);
+                    Input(player, cki, ConsoleKey.UpArrow, ConsoleKey.DownArrow, ConsoleKey.RightArrow, ConsoleKey.LeftArrow);
 
-            WriteBinaryFile(x,y,z);
+                    savePosition(cki, ConsoleKey.Spacebar, player.Position, ref postions);
+
+                    Exit(cki, ConsoleKey.Escape, ref inGame);
+                }
+                //-----------------------------------------------------------------------------------------------------------
+                player.DrawEntity();
+
+            } while (inGame);
+
+            foreach (Vector3 vec in postions)
+            {
+                WriteBinaryFile(vec);
+            }
         }
         static void ReadFile()
         {
@@ -34,19 +48,62 @@ namespace Read_FileText
             fs.Close();
         }
 
-        static void WriteBinaryFile(float x, float y, float z)
+        static void WriteBinaryFile(Vector3 vector)
         {
             FileStream fs = File.OpenWrite("example.dat");
 
             BinaryWriter bw = new BinaryWriter(fs);
 
-            bw.Write(x);
-            bw.Write(y);
-            bw.Write(z);
+            bw.Write(vector.x);
+            bw.Write(vector.y);
+            bw.Write(vector.x / vector.y);
 
             bw.Close();
             fs.Close();
         }
 
+        static void Input(Character character, ConsoleKeyInfo cki, ConsoleKey up, ConsoleKey down, ConsoleKey rigth, ConsoleKey left, int value = 1)
+        {
+            character.ClearCurrentPosition();
+
+            if (cki.Key == up)
+            {
+                character.MoveUp(value);
+            }
+
+            if (cki.Key == down)
+            {
+                character.MoveDown(value);
+            }
+
+            if (cki.Key == rigth)
+            {
+                character.MoveRigth(value);
+            }
+
+            if (cki.Key == left)
+            {
+                character.MoveLeft(value);
+            }
+
+            character.setLimits();
+
+        }
+
+        static void savePosition(ConsoleKeyInfo cki, ConsoleKey keySave, Vector3 vec3, ref List<Vector3> pos)
+        {
+            if (cki.Key == keySave)
+            {
+                pos.Add(vec3);
+            }
+        }
+
+        static void Exit(ConsoleKeyInfo cki, ConsoleKey keyExit, ref bool inGame)
+        {
+            if (cki.Key == keyExit)
+            {
+                inGame = false;
+            }
+        }
     }
 }
