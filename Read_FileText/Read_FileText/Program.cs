@@ -35,6 +35,12 @@ namespace Read_FileText
             {
                 WriteBinaryFile(vec);
             }
+
+            Vector3 vector;
+            vector.x = 1000;
+            vector.y = 1000;
+            WriteBinaryFile(vector);
+
         }
         static void ReadFile()
         {
@@ -64,6 +70,7 @@ namespace Read_FileText
 
         static void Input(Character character, ConsoleKeyInfo cki, ConsoleKey up, ConsoleKey down, ConsoleKey rigth, ConsoleKey left, int value = 1)
         {
+
             character.ClearCurrentPosition();
 
             if (cki.Key == up)
